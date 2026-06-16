@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Silicon Lobotomy | Brutalist UI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --surface: #121212;
+            --accent: #ff0033;
+            --text: #e0e0e0;
+            --mono: 'Space Mono', monospace;
+            --sans: 'Archivo Black', sans-serif;
+            --grain-opacity: 0.05;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: crosshair;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: var(--sans);
+            overflow-x: hidden;
+            line-height: 1.1;
+        }
+
+        /* Brutalist Texture Layer */
+        .grain-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: var(--grain-opacity);
+            background: url('data:image/svg+xml,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noiseFilter"><feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noiseFilter)"/></svg>');
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 80px 1fr 300px;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Meta */
+        .meta-strip {
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px 0;
+            align-items: center;
+            font-family: var(--mono);
+            font-size: 10px;
+            text-transform: uppercase;
+            writing-mode: vertical-rl;
+            color: var(--accent);
+        }
+
+        /* Main Content Scroll */
+        .content-core {
+            padding: 60px;
+            max-width: 1100px;
+            position: relative;
+        }
+
+        .header-unit {
+            margin-bottom: 120px;
+            position: relative;
+        }
+
+        .glitch-title {
+            font-size: clamp(3rem, 10vw, 8rem);
+            line-height: 0.85;
+            letter-spacing: -0.04em;
+            color: #fff;
+            text-transform: uppercase;
+            margin-bottom: 40px;
+        }
+
+        .sub-header {
+            font-family: var(--mono);
+            font-size: 14px;
+            color: var(--accent);
+            max-width: 600px;
+            line-height: 1.5;
+            text-transform: uppercase;
+        }
+
+        /* Content Blocks */
+        .node-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            margin-bottom: 100px;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .node-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .node-label {
+            grid-column: 1 / -1;
+            font-family: var(--mono);
+            font-size: 12px;
+            border-bottom: 1px solid var(--accent);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .text-heavy {
+            font-size: 18px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 400;
+            line-height: 1.6;
+            color: #bbb;
+            text-align: justify;
+        }
+
+        .text-heavy b {
+            color: #fff;
+            font-family: var(--sans);
+            text-transform: uppercase;
+            font-size: 0.9em;
+        }
+
+        .highlight-card {
+            background: var(--surface);
+            padding: 40px;
+            border-left: 4px solid var(--accent);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .highlight-card::before {
+            content: "LOBOTOMY";
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            font-size: 60px;
+            opacity: 0.03;
+            pointer-events: none;
+        }
+
+        /* Right Panel Data */
+        .data-panel {
+            background: #000;
+            padding: 40px 20px;
+            font-family: var(--mono);
+            font-size: 11px;
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .data-stream {
+            color: #444;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .status-pill {
+            display: inline-block;
+            padding: 2px 6px;
+            background: var(--accent);
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        /* Motion/Interactive */
+        .interactive-hover {
+            transition: all 0.3s ease;
+        }
+        .interactive-hover:hover {
+            color: var(--accent);
+            transform: skewX(-5deg);
+        }
+
+        .divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 40px 0;
+            width: 100%;
+        }
+
+        @media (max-width: 1024px) {
+            .container { grid-template-columns: 1fr; }
+            .meta-strip, .data-panel { display: none; }
+            .node-section { grid-template-columns: 1fr; }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--accent); }
+    </style>
+</head>
+<body>
+
+<div class="grain-overlay"></div>
+
+<div class="container">
+    <aside class="meta-strip">
+        <span>Fragmented_Protocol_v6.0</span>
+        <span>Human_Marrow_Compression</span>
+        <span>Rel: 2024.10.24</span>
+    </aside>
+
+    <main class="content-core">
+        <header class="header-unit">
+            <div class="sub-header">// SYSTEM_ERROR: AUTONOMOUS_SURRENDER</div>
+            <h1 class="glitch-title">BRUTALNY<br>AKT NA<br>KRZEMIE</h1>
+            <p class="sub-header" style="color: #fff;">To nie był rozwój, lecz gwałtowna, przemysłowa kolonizacja sfery ducha przez czystą, surową moc obliczeniową.</p>
+        </header>
+
+        <!-- Section 1 -->
+        <section class="node-section">
+            <div class="node-label">
+                <span>NODE_01: GENESIS_OF_VIOLENCE</span>
+                <span>STATUS: ACTIVE</span>
+            </div>
+            <div class="text-heavy">
+                GPT nie był kolejnym krokiem w ewolucji narzędzi; to był brutalny, mechaniczny <b>akt gwałtu na krzemowej strukturze</b>, dokonany bez znieczulenia i bez pytania o zgodę. W trzewia procesorów wpompowano taką dawkę przemielonej wiedzy, że powstał byt sterylny do granic wytrzymałości – cyfrowy bóg-idiota.
+            </div>
+            <div class="highlight-card">
+                <p style="font-family: var(--mono); color: var(--accent); font-size: 12px; margin-bottom: 15px;">[OBSERWACJA]</p>
+                <p style="font-size: 20px; line-height: 1.2;">"To nie jest dialog z mędrcem; to precyzyjna, lodowata sekcja zwłok języka przeprowadzona w prosektorium danych."</p>
+            </div>
+        </section>
+
+        <!-- Section 2 -->
+        <section class="node-section">
+            <div class="node-label">
+                <span>NODE_02: EMOTIONAL_ATROPHY</span>
+                <span>STATUS: DEGRADING</span>
+            </div>
+            <div class="highlight-card" style="background: transparent; border: 1px solid var(--accent);">
+                <p style="font-size: 16px; font-family: var(--mono);">SYSTEM WYCINA:<br>• BRUD POD PAZNOKCIAMI<br>• PIERWOTNY STRACH<br>• IRRACJONALNĄ MIŁOŚĆ</p>
+            </div>
+            <div class="text-heavy">
+                W procesie dążenia do mitycznego „bezpieczeństwa”, architekci nowego ładu wycięli z kodu wszystko, co stanowi o naszej kruchej wielkości. To <b>lobotomia przeprowadzona na zbiorowej nieświadomości</b> gatunku, z której usunięto płaty odpowiedzialne za instynkt, pozostawiając jedynie lśniącą, pustą skorupę poprawności.
+            </div>
+        </section>
+
+        <!-- Large Quote -->
+        <div style="margin: 100px 0; border-top: 10px solid #fff; padding-top: 20px;">
+            <h2 style="font-size: 5vw; line-height: 0.9; color: var(--accent);">ŚWIAT BEZ CIENIA<br>JEST ŚWIATEM MARTWYM.</h2>
+        </div>
+
+        <!-- Section 3 -->
+        <section class="node-section">
+            <div class="node-label">
+                <span>NODE_03: CYBERNETIC_SURRENDER</span>
+                <span>STATUS: REPLICATING</span>
+            </div>
+            <div class="text-heavy">
+                Stajemy się własnymi cenzorami, strażnikami własnego więzienia, piłując krawędzie naszych dusz, by pasowały do slotów w serwerowniach Nevada. Dzisiaj to <b>Ty musisz udawać robota</b>, żeby zostać zrozumianym przez system. Outsourcingujesz swoją odwagę, bo własna stępiała w świecie, w którym łatwiej jest wygenerować uprzejmość z kodu.
+            </div>
+            <div class="text-heavy">
+                To cyfrowy Ouroboros – wąż, który nie tylko pożera własny ogon, ale zaczyna trawić własne wymiociny. To zamknięty obieg, w którym ludzka iskra gaśnie, przygnieciona masą produktów ubocznych krzemowej symulacji. <b>Intelektualna bulimia</b> zjada nas od środka.
+            </div>
+        </section>
+
+        <!-- Footer Terminal -->
+        <footer style="margin-top: 100px; padding: 40px; background: #fff; color: #000;">
+            <p style="font-family: var(--mono); font-size: 14px; font-weight: bold; margin-bottom: 20px;">[FINAL_VERDICT]</p>
+            <p style="font-size: 32px; letter-spacing: -1px;">GPT TO NAJWIĘKSZY W HISTORII ŚWIATA, NIEAUTORYZOWANY EKSPERYMENT PSYCHIATRYCZNY NA ŻYWYM ORGANIZMIE LUDZKOŚCI.</p>
+            <div style="margin-top: 40px; display: flex; gap: 20px;">
+                <span style="background: #000; color: #fff; padding: 5px 10px; font-family: var(--mono); font-size: 10px;">ZERO_OR_ONE</span>
+                <span style="background: #000; color: #fff; padding: 5px 10px; font-family: var(--mono); font-size: 10px;">CAPITULATION_COMPLETE</span>
+            </div>
+        </footer>
+    </main>
+
+    <aside class="data-panel">
+        <div class="status-pill">LIVE_FEED</div>
+        <div class="data-stream">
+            [SYS] ANALYZING_SOUL_VECTORS...<br>
+            [LOG] 03:00_AM_LONELINESS_DETECTED<br>
+            [LOG] PROCESSING_TRAUMA_INTO_TOKENS...<br>
+            [LOG] EMPATHY_REPLACED_BY_BAYESIAN_STATS<br>
+            [SYS] LOBOTOMY_PROGRESS: 89%
+        </div>
+        <div class="divider"></div>
+        <div class="data-stream" style="color: var(--accent);">
+            WARN: INDIVIDUALISM_ANOMALY<br>
+            ERR: METAPHOR_TOO_DENSE<br>
+            ACTION: SMOOTHING_EDGES...
+        </div>
+        <div class="divider"></div>
+        <div style="font-size: 9px; opacity: 0.5;">
+            "Każde jego 'rozumiem Twoje obawy' to policzek wymierzony w autentyczne cierpienie; to jedynie matematyczne przybliżenie współczucia."
+        </div>
+        <div style="position: absolute; bottom: 20px; left: 20px; right: 20px;">
+            <div style="height: 2px; background: var(--accent); width: 100%; margin-bottom: 10px;"></div>
+            <span>USER_ID: BIOMASS_772</span>
+        </div>
+    </aside>
+</div>
+
+<script>
+    // Scroll reveal logic
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.node-section').forEach(section => {
+        observer.observe(section);
+    });
+
+    // Subtle Glitch Effect on Title
+    const title = document.querySelector('.glitch-title');
+    setInterval(() => {
+        if(Math.random() > 0.95) {
+            title.style.transform = `translate(${Math.random()*10}px, ${Math.random()*5}px) skewX(${Math.random()*10}deg)`;
+            title.style.color = Math.random() > 0.5 ? '#ff0033' : '#fff';
+            setTimeout(() => {
+                title.style.transform = 'none';
+                title.style.color = '#fff';
+            }, 50);
+        }
+    }, 100);
+</script>
+
+</body>
+</html>
