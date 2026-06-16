@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOBRZE | KSIĘGA 1: TOŻSAMOŚĆ CYFROWA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #050505;
+            --accent: #00f3ff;
+            --accent-dim: rgba(0, 243, 255, 0.2);
+            --text-main: #e0e0e0;
+            --text-muted: #666;
+            --mono: 'Space Mono', monospace;
+            --sans: 'Inter', sans-serif;
+            --fluid-speed: 20s;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: crosshair;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: var(--sans);
+            overflow-x: hidden;
+            line-height: 1.5;
+        }
+
+        /* Viscous Background Effect */
+        .viscous-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            filter: contrast(150%) brightness(50%);
+            background: radial-gradient(circle at 50% 50%, #111, #000);
+        }
+
+        .blob {
+            position: absolute;
+            background: var(--accent);
+            filter: blur(60px);
+            border-radius: 50%;
+            opacity: 0.15;
+            animation: move var(--fluid-speed) infinite alternate ease-in-out;
+        }
+
+        @keyframes move {
+            0% { transform: translate(-10%, -10%) scale(1); }
+            100% { transform: translate(20%, 30%) scale(1.5); }
+        }
+
+        /* Layout */
+        .interface-grid {
+            display: grid;
+            grid-template-columns: 350px 1fr 300px;
+            height: 100vh;
+            padding: 20px;
+            gap: 20px;
+        }
+
+        /* Sidebar: Chapters */
+        .sidebar {
+            border-right: 1px solid var(--accent-dim);
+            padding-right: 20px;
+            overflow-y: auto;
+            scrollbar-width: none;
+        }
+
+        .sidebar::-webkit-scrollbar { display: none; }
+
+        .chapter-tag {
+            font-family: var(--mono);
+            font-size: 0.7rem;
+            color: var(--accent);
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .chapter-card {
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            transition: all 0.3s ease;
+        }
+
+        .chapter-card:hover {
+            padding-left: 10px;
+            border-bottom: 1px solid var(--accent);
+        }
+
+        .chapter-title {
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Main Viewport */
+        .viewport {
+            position: relative;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--accent-dim);
+            overflow-y: auto;
+            padding: 60px;
+            backdrop-filter: blur(10px);
+        }
+
+        .hero-title {
+            font-size: 4.5rem;
+            font-weight: 900;
+            line-height: 0.9;
+            letter-spacing: -3px;
+            margin-bottom: 40px;
+            color: #fff;
+        }
+
+        .hero-title span {
+            color: var(--accent);
+            display: block;
+        }
+
+        .manifesto-block {
+            max-width: 600px;
+            margin-bottom: 80px;
+        }
+
+        .manifesto-text {
+            font-size: 1.2rem;
+            color: var(--text-main);
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .manifesto-text::before {
+            content: '';
+            position: absolute;
+            left: -20px;
+            top: 0;
+            height: 100%;
+            width: 2px;
+            background: var(--accent);
+        }
+
+        /* Biometric Map Visualization */
+        .mapping-data {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-family: var(--mono);
+            font-size: 0.6rem;
+            color: var(--accent);
+            text-align: right;
+            pointer-events: none;
+        }
+
+        .biometric-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            background: 
+                repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(0, 243, 255, 0.03) 1px, rgba(0, 243, 255, 0.03) 2px),
+                repeating-linear-gradient(90deg, transparent, transparent 1px, rgba(0, 243, 255, 0.03) 1px, rgba(0, 243, 255, 0.03) 2px);
+            background-size: 40px 40px;
+            z-index: 100;
+        }
+
+        /* Content Sections */
+        .data-section {
+            margin-top: 100px;
+        }
+
+        .section-label {
+            font-family: var(--mono);
+            color: var(--accent);
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-label::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--accent-dim);
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+
+        .stat-box {
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 20px;
+            background: rgba(0,0,0,0.4);
+        }
+
+        .stat-value {
+            font-family: var(--mono);
+            font-size: 1.5rem;
+            color: var(--accent);
+        }
+
+        /* Navigation Buttons */
+        .nav-footer {
+            margin-top: 100px;
+            padding: 40px;
+            border-top: 1px solid var(--accent);
+            text-align: center;
+        }
+
+        .choice-title {
+            font-family: var(--mono);
+            color: var(--accent);
+            margin-bottom: 30px;
+        }
+
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .btn {
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 15px 30px;
+            font-family: var(--mono);
+            text-transform: uppercase;
+            font-weight: 700;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background: var(--accent);
+            color: var(--bg);
+            box-shadow: 0 0 20px var(--accent-dim);
+        }
+
+        .btn span {
+            display: block;
+            font-size: 0.7rem;
+            opacity: 0.7;
+        }
+
+        /* Scroll Progress */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: var(--accent);
+            z-index: 1000;
+            width: 0%;
+            box-shadow: 0 0 10px var(--accent);
+        }
+
+        @media (max-width: 1024px) {
+            .interface-grid {
+                grid-template-columns: 1fr;
+            }
+            .sidebar, .mapping-data { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="progress-bar" id="pb"></div>
+    <div class="biometric-overlay"></div>
+    
+    <div class="viscous-container">
+        <div class="blob" style="width: 600px; height: 600px; top: -10%; left: -10%;"></div>
+        <div class="blob" style="width: 400px; height: 400px; bottom: 10%; right: 10%; animation-delay: -5s;"></div>
+    </div>
+
+    <div class="interface-grid">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div style="margin-bottom: 40px;">
+                <h2 style="font-family: var(--mono); font-size: 1.2rem;">DOBRZE_OS.v1</h2>
+                <p style="color: var(--text-muted); font-size: 0.7rem;">SYSTEM ARCHITEKTURY KONTROLI</p>
+            </div>
+
+            <div class="chapter-card">
+                <span class="chapter-tag">MODUŁ 01</span>
+                <div class="chapter-title">Czym jest tożsamość</div>
+            </div>
+            <div class="chapter-card">
+                <span class="chapter-tag">MODUŁ 02</span>
+                <div class="chapter-title">Dane jako pamięć</div>
+            </div>
+            <div class="chapter-card">
+                <span class="chapter-tag">MODUŁ 03</span>
+                <div class="chapter-title">Rytuał zgody</div>
+            </div>
+            <div class="chapter-card">
+                <span class="chapter-tag">MODUŁ 04</span>
+                <div class="chapter-title">Profil ryzyka</div>
+            </div>
+            <div class="chapter-card">
+                <span class="chapter-tag">MODUŁ 05</span>
+                <div class="chapter-title">Biometria ciała</div>
+            </div>
+            <div class="chapter-card">
+                <span class="chapter-tag">MODUŁ 06</span>
+                <div class="chapter-title">Algorytm moralności</div>
+            </div>
+            <div class="chapter-card">
+                <span class="chapter-tag">MODUŁ 07</span>
+                <div class="chapter-title">Kredyt bez numeru</div>
+            </div>
+            <div class="chapter-card">
+                <span class="chapter-tag">MODUŁ 08</span>
+                <div class="chapter-title">AI jako pośrednik</div>
+            </div>
+            <div class="chapter-card">
+                <span class="chapter-tag">MODUŁ 09</span>
+                <div class="chapter-title">Reakcja na błąd</div>
+            </div>
+            <div class="chapter-card">
+                <span class="chapter-tag">MODUŁ 10</span>
+                <div class="chapter-title">Suwerenność</div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="viewport" id="main-content">
+            <div class="mapping-data">
+                LAT: 52.2297<br>
+                LONG: 21.0122<br>
+                STATUS: CALIBRATING<br>
+                ID: NULL_NODE
+            </div>
+
+            <header>
+                <h1 class="hero-title">
+                    TOŻSAMOŚĆ<span>CYFROWA</span>
+                </h1>
+                <div class="manifesto-block">
+                    <p class="manifesto-text">
+                        KONTROLA NIE NADCHODZI. ONA JUŻ DZIAŁA. Nie zostaniesz zniewolony siłą. Nie będzie kajdan. Będzie wygoda.
+                    </p>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; font-family: var(--mono);">
+                        Ta księga nie ostrzega. Pokazuje mechanizm.
+                    </p>
+                </div>
+            </header>
+
+            <section class="data-section">
+                <div class="section-label">ANALIZA PROFILU DECYZYJNEGO</div>
+                <div class="content-grid">
+                    <div class="stat-box">
+                        <p class="chapter-tag">IDENTYFIKACJA</p>
+                        <p>To nie jest dowód osobisty. To prognoza. System nie pyta kim jesteś. Oblicza co zrobisz.</p>
+                    </div>
+                    <div class="stat-box">
+                        <p class="chapter-tag">METRYKI</p>
+                        <ul style="font-family: var(--mono); font-size: 0.8rem; list-style: none;">
+                            <li>> STABILNOŚĆ EMOCJONALNA</li>
+                            <li>> ODPORNOŚĆ NA STRES</li>
+                            <li>> PRZEWIDYWALNOŚĆ WYBORÓW</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="section-label">MAPA UWAGI</div>
+                <div class="manifesto-block">
+                    <h3 style="margin-bottom: 15px; color: var(--accent);">DANE JAKO PAMIĘĆ ZASTĘPCZA</h3>
+                    <p>Każde pociągnięcie palcem, każde zatrzymanie wzroku buduje mapę Twojej woli. Gdy system zna Twoją uwagę lepiej niż Ty – Twoja wola staje się produktem ubocznym algorytmu.</p>
+                </div>
+
+                <div class="section-label">BIOLOGIA POSŁUSZEŃSTWA</div>
+                <div class="content-grid">
+                    <div class="stat-box">
+                        <p class="chapter-tag">HASŁO: CIAŁO</p>
+                        <p>Głos. Chód. Twarz. Puls. To nie bezpieczeństwo. To przypięcie tożsamości do biologii. Od tej chwili nie logujesz się do systemu. Ty nim jesteś.</p>
+                    </div>
+                    <div class="stat-box" style="border-color: var(--accent);">
+                        <p class="chapter-tag" style="color: #fff;">SCORING EGZYSTENCJALNY</p>
+                        <p style="font-size: 0.8rem;">Najcenniejszy użytkownik: ten, który myśli, że jest wolny.</p>
+                        <div class="stat-value">99.2% PROBABILITY</div>
+                    </div>
+                </div>
+
+                <div class="section-label">MECHANIZM PRZETRWANIA</div>
+                <div class="manifesto-block" style="background: rgba(0,243,255,0.05); padding: 30px; border-left: 4px solid var(--accent);">
+                    <p><strong>WOLNOŚĆ NIE JEST OPOREM. JEST NIESYNCHRONIZACJĄ.</strong></p>
+                    <p style="margin-top: 10px;">Nie musisz niszczyć systemu. Wystarczy, że nie dasz się skalibrować. Człowiek nieprzewidywalny jest poza kontrolą.</p>
+                </div>
+            </section>
+
+            <footer class="nav-footer">
+                <p class="choice-title">WYBIERZ KOLEJNĄ TRANSMISJĘ</p>
+                <div class="btn-group">
+                    <a href="#" class="btn">
+                        <span>KSIĘGA 2</span>
+                        Biologia posłuszeństwa
+                    </a>
+                    <a href="#" class="btn">
+                        <span>KSIĘGA 3</span>
+                        Jednostka suwerenna
+                    </a>
+                </div>
+            </footer>
+        </main>
+
+        <!-- Stats Panel -->
+        <aside style="padding: 20px; border-left: 1px solid var(--accent-dim);">
+            <div style="font-family: var(--mono); font-size: 0.7rem;">
+                <div style="margin-bottom: 20px;">
+                    <p style="color: var(--text-muted);">SYS_TIME</p>
+                    <p id="clock">00:00:00:00</p>
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <p style="color: var(--text-muted);">NETWORK_LOAD</p>
+                    <div style="width: 100%; height: 4px; background: #222; margin-top: 5px;">
+                        <div style="width: 65%; height: 100%; background: var(--accent);"></div>
+                    </div>
+                </div>
+                <div style="color: var(--accent); line-height: 1.2;">
+                    [INFO] TRACING_USER...<br>
+                    [INFO] MAPPING_NODES...<br>
+                    [INFO] CALIBRATING_REALITY...<br>
+                    [WARN] UNPREDICTABLE_BEHAVIOR_DETECTED
+                </div>
+                
+                <div style="margin-top: 50px; opacity: 0.3;">
+                    <svg viewBox="0 0 100 100" width="100%">
+                        <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-width="0.5" stroke-dasharray="5 5" />
+                        <path d="M50 5 L50 95 M5 50 L95 50" stroke="currentColor" stroke-width="0.5" />
+                        <circle cx="50" cy="50" r="2" fill="currentColor">
+                            <animate attributeName="r" values="2;4;2" dur="2s" repeatCount="indefinite" />
+                        </circle>
+                    </svg>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script>
+        // Progress Bar
+        const viewport = document.getElementById('main-content');
+        const pb = document.getElementById('pb');
+        viewport.onscroll = () => {
+            const pct = (viewport.scrollTop / (viewport.scrollHeight - viewport.clientHeight)) * 100;
+            pb.style.width = pct + '%';
+        };
+
+        // Live Clock
+        function updateClock() {
+            const now = new Date();
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            const s = String(now.getSeconds()).padStart(2, '0');
+            const ms = String(now.getMilliseconds()).padStart(3, '0').substring(0,2);
+            document.getElementById('clock').innerText = `${h}:${m}:${s}:${ms}`;
+        }
+        setInterval(updateClock, 50);
+
+        // Interactive blobs follow mouse subtle
+        document.addEventListener('mousemove', (e) => {
+            const x = (e.clientX / window.innerWidth) - 0.5;
+            const y = (e.clientY / window.innerHeight) - 0.5;
+            document.querySelectorAll('.blob').forEach((blob, i) => {
+                const shift = (i + 1) * 20;
+                blob.style.transform = `translate(${x * shift}px, ${y * shift}px)`;
+            });
+        });
+    </script>
+</body>
+</html>
