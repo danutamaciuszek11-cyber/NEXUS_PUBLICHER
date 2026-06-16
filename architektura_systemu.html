@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOBRZE | Księga 1</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;900&family=JetBrains+Mono:wght@300;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #05070a;
+            --crystal-glow: rgba(100, 200, 255, 0.15);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --accent: #00f2ff;
+            --text-main: #e0e0e0;
+            --text-muted: #666;
+            --mono: 'JetBrains Mono', monospace;
+            --sans: 'Inter', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: var(--sans);
+            overflow-x: hidden;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Materiality: Crystalline Grain & Grid */
+        .noise-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 100;
+            opacity: 0.04;
+            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3External%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        .grid-lines {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                linear-gradient(to right, var(--border-color) 1px, transparent 1px),
+                linear-gradient(to bottom, var(--border-color) 1px, transparent 1px);
+            background-size: 40px 40px;
+            mask-image: radial-gradient(circle at center, black, transparent 80%);
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        /* Layout Architecture */
+        .monolith-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 120px 40px;
+            position: relative;
+        }
+
+        header {
+            margin-bottom: 150px;
+            position: relative;
+        }
+
+        .book-meta {
+            font-family: var(--mono);
+            font-size: 12px;
+            letter-spacing: 0.3em;
+            color: var(--accent);
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-weight: 900;
+            font-size: clamp(3rem, 10vw, 6rem);
+            line-height: 0.9;
+            letter-spacing: -0.04em;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+
+        .subtitle {
+            font-family: var(--mono);
+            color: var(--text-muted);
+            font-size: 14px;
+            max-width: 400px;
+        }
+
+        /* Chapter Cards */
+        .chapter {
+            margin-bottom: 120px;
+            position: relative;
+            padding-left: 40px;
+            border-left: 1px solid var(--border-color);
+            transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .chapter:hover {
+            border-left-color: var(--accent);
+            padding-left: 50px;
+        }
+
+        .chapter-num {
+            font-family: var(--mono);
+            font-size: 12px;
+            color: var(--accent);
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .chapter-title {
+            font-size: 24px;
+            font-weight: 400;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .content-block {
+            font-size: 18px;
+            font-weight: 300;
+            color: var(--text-main);
+            max-width: 600px;
+        }
+
+        .highlight-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            padding: 30px;
+            margin: 30px 0;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .highlight-box::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            animation: scan 3s linear infinite;
+        }
+
+        @keyframes scan {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(400%); }
+        }
+
+        .data-list {
+            list-style: none;
+            font-family: var(--mono);
+            font-size: 14px;
+            color: var(--accent);
+            margin-top: 20px;
+        }
+
+        .data-list li::before {
+            content: '[■] ';
+            font-size: 10px;
+        }
+
+        /* Crystalline Decorations */
+        .crystal-shard {
+            position: absolute;
+            width: 100px;
+            height: 300px;
+            background: linear-gradient(135deg, var(--crystal-glow), transparent);
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+            z-index: -1;
+            filter: blur(40px);
+            pointer-events: none;
+        }
+
+        /* Selection Section */
+        .selection-zone {
+            margin-top: 200px;
+            text-align: center;
+            border-top: 1px solid var(--border-color);
+            padding-top: 100px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 40px;
+        }
+
+        .choice-btn {
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 20px 40px;
+            font-family: var(--mono);
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .choice-btn:hover {
+            background: var(--accent);
+            color: var(--bg);
+            box-shadow: 0 0 30px var(--accent);
+        }
+
+        footer {
+            margin-top: 150px;
+            padding-bottom: 50px;
+            text-align: center;
+            font-family: var(--mono);
+            font-size: 10px;
+            color: var(--text-muted);
+            letter-spacing: 0.5em;
+        }
+
+        /* Animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 1s ease-out;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            .monolith-container { padding: 60px 20px; }
+            h1 { font-size: 3.5rem; }
+            .btn-group { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="noise-overlay"></div>
+    <div class="grid-lines"></div>
+
+    <div class="monolith-container">
+        <div class="crystal-shard" style="top: 10%; right: -5%;"></div>
+        <div class="crystal-shard" style="top: 40%; left: -10%; transform: rotate(45deg);"></div>
+
+        <header>
+            <div class="book-meta">Architektura Systemu // Księga 1</div>
+            <h1>Dobrze.</h1>
+            <div class="subtitle">
+                Jeszcze chłodniej. Jeszcze precyzyjniej. Bez teorii spiskowych. Sama architektura.
+            </div>
+        </header>
+
+        <section class="chapter reveal">
+            <span class="chapter-num">00. WSTĘP</span>
+            <h2 class="chapter-title">Kontrola nie nadchodzi</h2>
+            <div class="content-block">
+                Ona już działa. Nie zostaniesz zniewolony siłą. Nie będzie kajdan. Nie będzie zakazów. Będzie wygoda. Tożsamość cyfrowa nie ma Cię ograniczyć. Ma sprawić, żebyś sam wybrał to, co dla Ciebie przewidziano. Ta księga nie ostrzega. Ta księga pokazuje mechanizm.
+            </div>
+        </section>
+
+        <section class="chapter reveal">
+            <span class="chapter-num">01. TOŻSAMOŚĆ</span>
+            <h2 class="chapter-title">Profil decyzyjny</h2>
+            <div class="content-block">
+                To nie jest dowód osobisty w telefonie. To profil decyzyjny. Nie pytają kim jesteś. Obliczają, co zrobisz. Zawiera:
+                <ul class="data-list">
+                    <li>MAPA ZACHOWAŃ</li>
+                    <li>PROFIL EMOCJONALNY</li>
+                    <li>ODPORNOŚĆ NA STRES</li>
+                    <li>PRZEWIDYWALNOŚĆ WYBORÓW</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="chapter reveal">
+            <span class="chapter-num">02. PAMIĘĆ</span>
+            <h2 class="chapter-title">Ślady zamiast myśli</h2>
+            <div class="content-block">
+                System nie potrzebuje Twoich myśli. Wystarczą ślady. Każde muśnięcie, każde zatrzymanie palca przy czytaniu buduje mapę uwagi. Gdy system zna Twoją uwagę, zna Twoją wolę lepiej niż Ty sam.
+            </div>
+        </section>
+
+        <section class="chapter reveal">
+            <span class="chapter-num">04. SCORING</span>
+            <h2 class="chapter-title">Ryzyko człowieka</h2>
+            <div class="highlight-box">
+                <p>Każdy użytkownik ma scoring. Nie tylko kredytowy. Egzystencjalny. System ocenia:</p>
+                <ul class="data-list">
+                    <li>CZY ZADASZ PYTANIE?</li>
+                    <li>CZY SIĘ PODPORZĄDKUJESZ?</li>
+                    <li>CZY ZMIENISZ TRAJEKTORIĘ?</li>
+                </ul>
+            </div>
+            <p style="color: var(--accent); font-family: var(--mono); font-size: 12px;">Najcenniejszy użytkownik: ten, który myśli, że jest wolny.</p>
+        </section>
+
+        <section class="chapter reveal">
+            <span class="chapter-num">05. BIOMETRIA</span>
+            <h2 class="chapter-title">Ciało jako hasło</h2>
+            <div class="content-block">
+                Hasła można zmienić. Ciała – nie. Głos. Chód. Twarz. Puls. To nie bezpieczeństwo. To przypięcie tożsamości do biologii. Od tej chwili nie logujesz się do systemu. <strong>Ty nim jesteś.</strong>
+            </div>
+        </section>
+
+        <section class="chapter reveal">
+            <span class="chapter-num">09. REAKCJA</span>
+            <h2 class="chapter-title">Dezaktywacja</h2>
+            <div class="content-block">
+                Jak system reaguje na jednostkę nieprzewidywalną?
+                <div style="margin-top: 20px; font-family: var(--mono); color: var(--accent);">
+                    1. REDUKCJA REKOMENDACJI <br>
+                    2. LIMIT WIDOCZNOŚCI <br>
+                    3. ODCIĘCIE DOSTĘPU
+                </div>
+                <p style="margin-top: 20px;">Nie kara. Dezaktywacja.</p>
+            </div>
+        </section>
+
+        <section class="chapter reveal" style="border-left-color: var(--accent);">
+            <span class="chapter-num">Finał. SUWERENNOŚĆ</span>
+            <h2 class="chapter-title">Niesynchronizacja</h2>
+            <div class="content-block">
+                Wolność nie jest oporem. Jest niesynchronizacją. Nie musisz niszczyć systemu. Wystarczy, że nie dasz się skalibrować. Człowiek, którego nie da się przewidzieć, jest poza kontrolą.
+            </div>
+        </section>
+
+        <div class="selection-zone reveal">
+            <div class="book-meta">Wybierz dalszą ścieżkę</div>
+            <div class="btn-group">
+                <button class="choice-btn" onclick="alert('Księga 2: Inicjowanie...')">2. Biologia posłuszeństwa</button>
+                <button class="choice-btn" onclick="alert('Księga 3: Inicjowanie...')">3. Jednostka suwerenna</button>
+            </div>
+        </div>
+
+        <footer>
+            PROJEKT: DOBRZE // ARCHITEKTURA KONTROLI // 2024
+        </footer>
+    </div>
+
+    <script>
+        // Reveal on scroll logic
+        const observerOptions = {
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // Parallax crystal effect
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            document.querySelectorAll('.crystal-shard').forEach((shard, index) => {
+                const speed = (index + 1) * 0.2;
+                shard.style.transform = `translateY(${scrolled * speed}px) rotate(${scrolled * 0.05}deg)`;
+            });
+        });
+    </script>
+</body>
+</html>
